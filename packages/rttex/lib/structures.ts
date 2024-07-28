@@ -40,14 +40,16 @@ export class RTFileHeader {
 
 export class RTPackHeader {
 	rtFileHeader: RTFileHeader;
-	compressedSize: number;
-	decompressedSize: number;
-	compressionType: number;
-	reversed: number;
+	compressedSize: number = 0;
+	decompressedSize: number = 0;
+	compressionType: number = 0;
+	reversed: number = 0;
+
+	constructor() {
+		this.rtFileHeader = new RTFileHeader();
+	}
 
 	deserialize(buffer: Buffer, pos = 0) {
-		this.rtFileHeader = new RTFileHeader();
-
 		pos = this.rtFileHeader.deserialize(buffer, pos);
 
 		this.compressedSize = buffer.readInt32LE(pos);
@@ -91,19 +93,32 @@ export class RTPackHeader {
 
 export class RTTEXHeader {
 	rtFileHeader: RTFileHeader;
+	// @ts-ignore
 	height: number;
+	// @ts-ignore
 	width: number;
+	// @ts-ignore
 	format: number;
+	// @ts-ignore
 	originalHeight: number;
+	// @ts-ignore
 	originalWidth: number;
+	// @ts-ignore
 	usesAlpha: number;
+	// @ts-ignore
 	aleardyCompressed: number;
+	// @ts-ignore
 	mipmapCount: number;
+	// @ts-ignore
 	reversedFlags: number;
+	// @ts-ignore
 	reversed: number;
 
-	deserialize(buffer: Buffer, pos = 0) {
+	constructor() {
 		this.rtFileHeader = new RTFileHeader();
+	}
+
+	deserialize(buffer: Buffer, pos = 0) {
 		pos = this.rtFileHeader.deserialize(buffer, pos);
 
 		this.height = buffer.readInt32LE(pos);
@@ -167,10 +182,15 @@ export class RTTEXHeader {
  */
 
 export class RTTEXMipHeader {
-	height: number;
+	// @ts-ignore
 	width: number;
+	// @ts-ignore
+	height: number;
+	// @ts-ignore
 	dataSize: number;
+	// @ts-ignore
 	mipLevel: number;
+	// @ts-ignore
 	reversed: number;
 
 	deserialize(buffer: Buffer, pos = 0) {

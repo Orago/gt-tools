@@ -1,15 +1,14 @@
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import zlib from 'node:zlib';
 import sharp from 'sharp';
 
-import { RTFileHeader, RTPackHeader, RTTEXHeader, RTTEXMipHeader } from './structures';
-
+import { RTPackHeader, RTTEXHeader, RTTEXMipHeader } from './structures.js';
 
 import {
 	eCompressionType,
 	C_RTFILE,
 	RT_FORMAT_EMBEDDED_FILE
-} from './config';
+} from './config.js';
 
 function getLowestPowerOf2(n: number) {
 	let lowest = 1;
@@ -21,16 +20,16 @@ function getLowestPowerOf2(n: number) {
 
 const { C_COMPRESSION_NONE, C_COMPRESSION_ZLIB } = eCompressionType;
 
-class RTFileToImage {
+export class RTFileToImage {
 	rttexHeader: RTTEXHeader;
 	rtpackHeader: RTPackHeader;
 	buffer: Buffer;
 	pos: number;
 
-	constructor(path: string, pos = 0) {
+	constructor(buffer: Buffer, pos = 0) {
 		this.rttexHeader = new RTTEXHeader();
 		this.rtpackHeader = new RTPackHeader();
-		this.buffer = fs.readFileSync(path);
+		this.buffer = buffer
 		this.pos = 0;
 
 		if (this.buffer.subarray(pos, C_RTFILE.PACKAGE.HEADER_BYTE_SIZE).toString() == C_RTFILE.PACKAGE.HEADER) {
@@ -38,7 +37,8 @@ class RTFileToImage {
 
 			if (this.rtpackHeader.compressionType == C_COMPRESSION_NONE) {
 				this.buffer = this.buffer.subarray(tempPos, this.buffer.length);
-			} else if (this.rtpackHeader.compressionType == C_COMPRESSION_ZLIB) {
+			}
+			else if (this.rtpackHeader.compressionType == C_COMPRESSION_ZLIB) {
 				this.buffer = zlib.inflateSync(this.buffer.subarray(tempPos, this.buffer.length));
 			}
 		}
@@ -76,7 +76,7 @@ class RTFileToImage {
 		}
 	}
 
-	async write(path, flipVertical = true) {
+	async write(path: string, flipVertical = true) {
 		return new Promise(async (resolve) => {
 			let rawData = await this.rawData();
 			if (rawData == null) {
@@ -105,17 +105,15 @@ class RTFileToImage {
 	}
 }
 
-export { RTFileToImage };
-
-class ImageToRTFile {
+export class ImageToRTFile {
 	buffer: Buffer;
 
-	constructor(path: string) {
-		this.buffer = fs.readFileSync(path);
+	constructor(buffer: Buffer) {
+		this.buffer = buffer;
 	}
 
 	async getImageSize() {
-		const image = await sharp(this.buffer);
+		const image = sharp(this.buffer);
 		const metadata = await image.metadata();
 
 		return {
@@ -164,65 +162,4 @@ class ImageToRTFile {
 
 		return bitmap;
 	}
-
-	async write(path: string) {
-		const imageSize = await this.getImageSize();
-		const imageLowestOf2Size = await this.getImageLowestOf2Size();
-		const rawData = await this.rawData();
-
-		const rtFileHeader = new RTFileHeader();
-		rtFileHeader.fileTypeId = C_RTFILE.TEXTURE_HEADER;
-		rtFileHeader.version = C_RTFILE.PACKAGE.LATEST_VERSION;
-		rtFileHeader.reversed = 0;
-
-		const rttexHeader = new RTTEXHeader();
-		rttexHeader.rtFileHeader = rtFileHeader;
-		rttexHeader.height = imageLowestOf2Size.height;
-		rttexHeader.width = imageLowestOf2Size.width;
-		rttexHeader.format = 5121;
-		rttexHeader.originalHeight = imageSize.height;
-		rttexHeader.originalWidth = imageSize.width;
-		rttexHeader.usesAlpha = 1;
-		rttexHeader.aleardyCompressed = 0;
-		rttexHeader.reversedFlags = 0;
-		rttexHeader.mipmapCount = 1;
-		rttexHeader.reversed = 1;
-
-		const rttexMipHeader = new RTTEXMipHeader();
-		rttexMipHeader.height = imageLowestOf2Size.height;
-		rttexMipHeader.width = imageLowestOf2Size.width;
-		rttexMipHeader.dataSize = rawData.data.length;
-		rttexMipHeader.mipLevel = 0;
-		rttexMipHeader.reversed = 0;
-
-		const header = Buffer.concat([rttexHeader.serialize(), rttexMipHeader.serialize()]);
-		const data = Buffer.concat([header, rawData.data]);
-		const deflated = await zlib.deflateSync(data);
-
-		rtFileHeader.fileTypeId = C_RTFILE.PACKAGE.HEADER;
-
-		const rtPackHeader = new RTPackHeader();
-		rtPackHeader.rtFileHeader = rtFileHeader;
-		rtPackHeader.compressedSize = deflated.length;
-		rtPackHeader.decompressedSize = data.length;
-		rtPackHeader.compressionType = C_COMPRESSION_ZLIB;
-
-		let theData = Buffer.concat([rtPackHeader.serialize(), deflated]);
-		fs.writeFileSync(path, theData);
-
-		const hashString = (buffer) => {
-			let hash = 0x55555555;
-
-			if (buffer)
-				for (let i = 0; i < buffer.length; i++)
-					hash = (hash >>> 27) + (hash << 5) + buffer[i];
-
-			return hash;
-		};
-
-		console.log(`Hash: ${hashString(theData)}`);
-		return true;
-	}
 }
-
-export { ImageToRTFile };

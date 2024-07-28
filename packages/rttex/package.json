@@ -1,25 +1,35 @@
 {
-  "name": "rttex",
-  "version": "0.0.0",
-  "description": "> TODO: description",
-  "author": "Orago <moshlingcat2004@gmail.com>",
-  "homepage": "",
-  "license": "ISC",
-  "main": "lib/rttex.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "test": "node ./__tests__/rttex.test.js"
-  },
-  "devDependencies": {
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "sharp": "^0.33.4"
-  }
+	"name": "rttex",
+	"version": "0.0.0",
+	"description": "> TODO: description",
+	"author": "Orago <moshlingcat2004@gmail.com>",
+	"homepage": "",
+	"license": "ISC",
+	"main": "lib/rttex.js",
+	"directories": {
+		"lib": "lib",
+		"test": "__tests__"
+	},
+	"files": [
+		"lib"
+	],
+	"exports": {
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"default": "./dist/*.js"
+		},
+		"./src/*": "./lib/*",
+		"./dist/*": "./dist/*"
+	},
+	"scripts": {
+		"test": "node ./__tests__/rttex.test.js",
+		"build": "rimraf ./dist && tsc"
+	},
+	"devDependencies": {
+		"typescript": "^5.5.4"
+	},
+	"dependencies": {
+		"rimraf": "^6.0.1",
+		"sharp": "^0.33.4"
+	}
 }
