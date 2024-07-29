@@ -1,11 +1,12 @@
 {
-	"name": "rttex",
+	"name": "@gt/rttex-node",
 	"version": "0.0.0",
 	"description": "> TODO: description",
-	"author": "Orago <moshlingcat2004@gmail.com>",
+	"author": "Orago",
 	"homepage": "",
 	"license": "ISC",
 	"main": "lib/rttex.js",
+	"type": "module",
 	"directories": {
 		"lib": "lib",
 		"test": "__tests__"
@@ -23,12 +24,16 @@
 	},
 	"scripts": {
 		"test": "node ./__tests__/rttex.test.js",
+		"dotest": "node ./dist/test",
 		"build": "rimraf ./dist && tsc"
 	},
 	"devDependencies": {
+		"@types/pako": "^2.0.3",
 		"typescript": "^5.5.4"
 	},
 	"dependencies": {
+		"buffer": "^6.0.3",
+		"pako": "^2.1.0",
 		"rimraf": "^6.0.1",
 		"sharp": "^0.33.4"
 	}

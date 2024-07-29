@@ -1,14 +1,13 @@
 import { RTFileToImage } from './rttexParser.js';
-
 import fs from 'fs';
 import { join } from 'path';
+import { writeRttexToImage } from './write.js';
 
 async function ls(path: string, ...options: any) {
 	const [resultFolder] = options;
+	const dir = await fs.promises.opendir(path);
 
-  const dir = await fs.promises.opendir(path);
-
-  for await (const fileEntry of dir) {
+	for await (const fileEntry of dir) {
 		const filePath = join(path, fileEntry.name);
 
 		if (filePath.includes('.') && !filePath.endsWith('.rttex'))
@@ -16,19 +15,19 @@ async function ls(path: string, ...options: any) {
 
 		const stats = await fs.promises.lstat(filePath);
 
-		if (stats.isDirectory()){
+		if (stats.isDirectory()) {
 			console.log(fileEntry.name, stats.isDirectory());
 
 			ls(filePath, ...options);
 		}
 
-		if (stats.isFile() && filePath.endsWith('.rttex')){
+		if (stats.isFile() && filePath.endsWith('.rttex')) {
 			const image = new RTFileToImage(fs.readFileSync(filePath));
 			const newDir = join(resultFolder, fileEntry.name).replace(/.rttex/g, '.png');
 
-			image.write(newDir);
+			writeRttexToImage(image, newDir);
 		}
-  }
+	}
 }
 
 let pathInputs = [
@@ -38,5 +37,5 @@ let pathInputs = [
 ];
 
 for (const path of pathInputs)
-	ls(path, './output/images/')
-	.catch(console.error);
+	ls(path, 'c:\\Users\\moshl\\Documents\\junk\\gtdecompspr')
+		.catch(console.error);

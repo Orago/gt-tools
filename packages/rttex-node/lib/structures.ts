@@ -5,8 +5,11 @@
  */
 
 export class RTFileHeader {
+	// @ts-ignore
 	fileTypeId: string;
+	// @ts-ignore
 	version: number;
+	// @ts-ignore
 	reversed: number;
 
 	deserialize(buffer: Buffer, pos = 0) {

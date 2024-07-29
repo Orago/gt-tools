@@ -1,8 +1,11 @@
 // import fs from 'node:fs';
-import zlib from 'node:zlib';
-import sharp from 'sharp';
+// import zlib from 'node:zlib';
+// import sharp from 'sharp';
+import pako from 'pako';
 
 import { RTPackHeader, RTTEXHeader, RTTEXMipHeader } from './structures.js';
+
+import { Buffer as Buff } from 'buffer';
 
 import {
 	eCompressionType,
@@ -20,6 +23,16 @@ function getLowestPowerOf2(n: number) {
 
 const { C_COMPRESSION_NONE, C_COMPRESSION_ZLIB } = eCompressionType;
 
+function inflateSync(buffer: Buffer) {
+	// Placeholder function: Replace this with actual inflation logic
+	// This function assumes the buffer is in a simple format that we can convert to a string
+	let inflatedData = '';
+	for (let i = 0; i < buffer.length; i++) {
+		inflatedData += String.fromCharCode(buffer[i]);
+	}
+	return inflatedData;
+}
+
 export class RTFileToImage {
 	rttexHeader: RTTEXHeader;
 	rtpackHeader: RTPackHeader;
@@ -35,17 +48,21 @@ export class RTFileToImage {
 		if (this.buffer.subarray(pos, C_RTFILE.PACKAGE.HEADER_BYTE_SIZE).toString() == C_RTFILE.PACKAGE.HEADER) {
 			const tempPos = this.rtpackHeader.deserialize(this.buffer, pos);
 
-			if (this.rtpackHeader.compressionType == C_COMPRESSION_NONE) {
+			if (this.rtpackHeader.compressionType == C_COMPRESSION_NONE)
 				this.buffer = this.buffer.subarray(tempPos, this.buffer.length);
-			}
-			else if (this.rtpackHeader.compressionType == C_COMPRESSION_ZLIB) {
-				this.buffer = zlib.inflateSync(this.buffer.subarray(tempPos, this.buffer.length));
-			}
+
+
+			else if (this.rtpackHeader.compressionType == C_COMPRESSION_ZLIB)
+				this.buffer = Buff.from(
+					pako.inflate(this.buffer.subarray(tempPos, this.buffer.length))
+				) as unknown as Buffer;
 		}
 
-		if (this.buffer.subarray(pos, C_RTFILE.PACKAGE.HEADER_BYTE_SIZE).toString() == C_RTFILE.TEXTURE_HEADER) {
+		if (
+			this.buffer.subarray(pos, C_RTFILE.PACKAGE.HEADER_BYTE_SIZE).toString() ==
+			C_RTFILE.TEXTURE_HEADER
+		)
 			this.pos = this.rttexHeader.deserialize(this.buffer, pos);
-		}
 	}
 
 	async rawData() {
@@ -75,34 +92,6 @@ export class RTFileToImage {
 			return mipData;
 		}
 	}
-
-	async write(path: string, flipVertical = true) {
-		return new Promise(async (resolve) => {
-			let rawData = await this.rawData();
-			if (rawData == null) {
-				resolve(false);
-				return;
-			}
-
-			sharp(rawData, {
-				raw: {
-					width: this.rttexHeader.width,
-					height: this.rttexHeader.height,
-					channels: this.rttexHeader.usesAlpha ? 4 : 3,
-				},
-			})
-				.flip(flipVertical)
-				.toFile(path, (err, info) => {
-					if (err) {
-						console.log(err);
-						resolve(false);
-					}
-
-					// console.log(info);
-					resolve(true);
-				});
-		});
-	}
 }
 
 export class ImageToRTFile {
@@ -113,53 +102,51 @@ export class ImageToRTFile {
 	}
 
 	async getImageSize() {
-		const image = sharp(this.buffer);
-		const metadata = await image.metadata();
+		// const image = sharp(this.buffer);
+		// const metadata = await image.metadata();
 
-		return {
-			width: metadata.width ?? 0,
-			height: metadata.height ?? 0
-		};
+		// return {
+		// 	width: metadata.width ?? 0,
+		// 	height: metadata.height ?? 0
+		// };
 	}
 
 	async getImageLowestOf2Size() {
-
-
-		const { width, height } = await this.getImageSize();
-		return {
-			width: getLowestPowerOf2(width),
-			height: getLowestPowerOf2(height)
-		};
+		// const { width, height } = await this.getImageSize();
+		// return {
+		// 	width: getLowestPowerOf2(width),
+		// 	height: getLowestPowerOf2(height)
+		// };
 	}
 
 	async rawData() {
-		const imageSize = await this.getImageSize();
-		const imageLowestOf2Size = await this.getImageLowestOf2Size();
+		// const imageSize = await this.getImageSize();
+		// const imageLowestOf2Size = await this.getImageLowestOf2Size();
 
-		const { data, info } = await sharp(this.buffer)
-			.flip(true)
-			.ensureAlpha()
-			.extend({
-				top: imageLowestOf2Size.height - imageSize.height,
-				bottom: 0,
-				left: 0,
-				right: imageLowestOf2Size.width - imageSize.width,
-				background: {
-					r: 0,
-					g: 0,
-					b: 0,
-					alpha: 0
-				}
-			})
-			.raw()
-			.toBuffer({ resolveWithObject: true });
+		// const { data, info } = await sharp(this.buffer)
+		// 	.flip(true)
+		// 	.ensureAlpha()
+		// 	.extend({
+		// 		top: imageLowestOf2Size.height - imageSize.height,
+		// 		bottom: 0,
+		// 		left: 0,
+		// 		right: imageLowestOf2Size.width - imageSize.width,
+		// 		background: {
+		// 			r: 0,
+		// 			g: 0,
+		// 			b: 0,
+		// 			alpha: 0
+		// 		}
+		// 	})
+		// 	.raw()
+		// 	.toBuffer({ resolveWithObject: true });
 
-		const bitmap = {
-			data,
-			width: info.width,
-			height: info.height,
-		};
+		// const bitmap = {
+		// 	data,
+		// 	width: info.width,
+		// 	height: info.height,
+		// };
 
-		return bitmap;
+		// return bitmap;
 	}
 }

@@ -5,13 +5,14 @@ import {
 	C_RTFILE,
 	eCompressionType
 } from './config.js';
-import { ImageToRTFile } from './rttex.js';
+import { ImageToRTFile, RTFileToImage } from './rttexParser.js';
 import {
 	RTFileHeader,
 	RTPackHeader,
 	RTTEXHeader,
 	RTTEXMipHeader
 } from './structures.js';
+import sharp from 'sharp';
 
 const { C_COMPRESSION_ZLIB } = eCompressionType;
 
@@ -25,7 +26,7 @@ function hashString(buffer: Buffer) {
 	return hash;
 }
 
-export async function writeImage(ITRF: ImageToRTFile, path: string) {
+export async function writeImageToRttex(ITRF: ImageToRTFile, path: string) {
 	const imageSize = await ITRF.getImageSize();
 	const imageLowestOf2Size = await ITRF.getImageLowestOf2Size();
 	const rawData = await ITRF.rawData();
@@ -74,4 +75,33 @@ export async function writeImage(ITRF: ImageToRTFile, path: string) {
 
 	console.log(`Hash: ${hashString(theData)}`);
 	return true;
+}
+
+export async function writeRttexToImage(RFTI: RTFileToImage, path: string, flipVertical = true) {
+	return new Promise(async (resolve) => {
+		let rawData = await RFTI.rawData();
+
+		if (rawData == null) {
+			resolve(false);
+			return;
+		}
+
+		sharp(rawData, {
+			raw: {
+				width: RFTI.rttexHeader.width,
+				height: RFTI.rttexHeader.height,
+				channels: RFTI.rttexHeader.usesAlpha ? 4 : 3,
+			},
+		})
+			.flip(flipVertical)
+			.toFile(path, (err, info) => {
+				if (err) {
+					console.log(err);
+					resolve(false);
+				}
+
+				// console.log(info);
+				resolve(true);
+			});
+	});
 }
