@@ -29,7 +29,7 @@ else {
 		new CompressionPlugin()
 	);
 }
-
+console.log('devmode', [devMode])
 /**
  * @type {import('webpack').Configuration}
  */
@@ -113,14 +113,14 @@ if (quickSettings.devMode === false) {
 		maxAssetSize: 512000,
 	};
 
-	webpackConfig.optimization = {
-		usedExports: true,
-		splitChunks: {
-			minSize: 10000,
-			maxSize: 250000,
-			chunks: 'all'
-		}
-	};
+	// webpackConfig.optimization = {
+	// 	usedExports: true,
+	// 	splitChunks: {
+	// 		minSize: 10000,
+	// 		maxSize: 250000,
+	// 		chunks: 'all'
+	// 	}
+	// };
 }
 
 if (quickSettings.optimize && webpackConfig.optimization != null) {
