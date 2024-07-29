@@ -27,7 +27,7 @@
 		"url": "https://github.com/Orago/gt-tools/issues"
 	},
 	"dependencies": {
-		"@gt/rttex-browser": "^0.0.0",
+		"@orago/rttex": "^0.0.0",
 
 		"@orago/dom": "^0.0.9",
 		"@orago/game": "^0.0.22",

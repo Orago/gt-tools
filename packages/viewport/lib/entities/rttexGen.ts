@@ -40,12 +40,13 @@ export class RttexEntityGenerator extends EngineObject {
 			let y = 0;
 
 			for (const img of this.images) {
-				y += img.height * engine.zoom + 10 * engine.zoom;
 
 				engine.brush.chainable
 					.pos(engine.offset.x, engine.offset.y + y)
 					.size(img.width * engine.zoom, img.height * engine.zoom)
-					.image(img)
+					.image(img);
+
+				y += img.height * engine.zoom;
 			}
 		})
 	}

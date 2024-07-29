@@ -1,9 +1,8 @@
 import Engine, { EngineObject } from '@orago/game/engine';
 import { Vector2Map } from '@orago/vector';
-import { baseTileSize } from '../app';
 import { brush } from '../renderer';
 import { screenToGrid } from '../transform';
-
+import { baseTileSize } from '../util/tiles';
 
 export class World extends EngineObject {
 	tiles: Vector2Map<number> = new Vector2Map();
