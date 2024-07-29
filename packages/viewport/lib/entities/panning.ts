@@ -21,6 +21,13 @@ export class PanAndZoomHandler extends EngineObject {
 
 		const { cursor } = engine;
 
+		cursor.events.on('touch', (e: TouchEvent) => {
+			if (window.TouchEvent && e instanceof Touch)
+				this.pan.active = true;
+		})
+
+		cursor.object.addEventListener('touchend', () => this.pan.active = false);
+
 		cursor.events.on('move', () => this.panTick());
 		cursor.events.on('middle', () => this.pan.active = true);
 		cursor.events.on('middle-release', () => this.pan.active = false);

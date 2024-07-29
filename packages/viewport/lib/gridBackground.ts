@@ -3,6 +3,8 @@ import Engine from "@orago/game/engine";
 interface gridBgOptions {
 	size: number;
 	gridColor?: string;
+	gridColorV?: string;
+	gridBackground?: string;
 	offset: {
 		x: number;
 		y: number;
@@ -10,24 +12,22 @@ interface gridBgOptions {
 }
 
 export function drawGridBackground(engine: Engine, options: gridBgOptions) {
-	const chain = engine.brush.chainable;
 	const { brush } = engine;
 	const { ctx } = engine.brush;
 
 	options.gridColor ??= 'grey';
-
-	chain
-		.color('grey');
+	options.gridColorV ??= options.gridColor;
+	options.gridBackground ??= 'silver';
 
 	const space = options.size;
 	// top is the position where the first line should be drawn (it's this part that gives the scrolling illusion)
 	// left is the position where the first line should be drawn
 	const top = (options.offset.y % space);
-	const left = ( options.offset.x % space); // - space is used only to reverse the direction of the lines
+	const left = (options.offset.x % space); // - space is used only to reverse the direction of the lines
 
 	// clear the canvas
 	ctx.clearRect(0, 0, brush.width, brush.height);
-	ctx.fillStyle = 'wheat';
+	ctx.fillStyle = options.gridBackground;
 	ctx.fillRect(0, 0, brush.width, brush.height);
 
 	// draw the 1px grid lines on the x axis
@@ -35,7 +35,7 @@ export function drawGridBackground(engine: Engine, options: gridBgOptions) {
 		ctx.beginPath();
 		ctx.moveTo(0, i);
 		ctx.lineTo(brush.width, i);
-		ctx.strokeStyle = 'goldenrod';
+		ctx.strokeStyle = options.gridColor;
 		ctx.stroke();
 	}
 
@@ -44,7 +44,7 @@ export function drawGridBackground(engine: Engine, options: gridBgOptions) {
 		ctx.beginPath();
 		ctx.moveTo(i, 0);
 		ctx.lineTo(i, brush.height);
-		ctx.strokeStyle = 'goldenrod';
+		ctx.strokeStyle = options.gridColorV;
 		ctx.stroke();
 	}
 }

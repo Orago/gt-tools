@@ -27,21 +27,23 @@
 		"url": "https://github.com/Orago/gt-tools/issues"
 	},
 	"dependencies": {
-		"@orago/rttex": "^0.0.0",
-
 		"@orago/dom": "^0.0.9",
 		"@orago/game": "^0.0.22",
 		"@orago/lib": "^0.0.17",
+		"@orago/rttex": "^0.0.0",
 		"@orago/vector": "^0.0.6",
 		"buffer": "^6.0.3",
 		"css-loader": "^7.1.2",
 		"express": "^4.19.2",
+		"file-saver": "^2.0.5",
+		"jszip": "^3.10.1",
 		"style-loader": "^4.0.0",
 		"ts-loader": "^9.5.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.9",
 		"@babel/preset-env": "^7.24.8",
+		"@types/file-saver": "^2.0.7",
 		"babel-loader": "^9.1.3",
 		"compression-webpack-plugin": "^11.1.0",
 		"typescript": "^5.5.3",
