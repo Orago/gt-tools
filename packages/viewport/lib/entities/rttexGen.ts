@@ -166,7 +166,6 @@ export class RttexEntityGenerator extends EngineObject {
 					e.sprite.toBlob(function (blob) { resolve(blob); return blob; }, 'image/png');
 				})
 			);
-
 		}
 
 		zip.generateAsync({ type: "blob" }).then(function (content) {

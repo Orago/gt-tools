@@ -31,6 +31,7 @@
 		"@orago/game": "^0.0.22",
 		"@orago/lib": "^0.0.17",
 		"@orago/rttex": "^0.0.0",
+		"@orago/items-dat": "^0.0.0",
 		"@orago/vector": "^0.0.6",
 		"buffer": "^6.0.3",
 		"css-loader": "^7.1.2",

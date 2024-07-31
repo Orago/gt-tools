@@ -7,6 +7,7 @@ import { PanAndZoomHandler } from '../entities/panning';
 import { newNode as node } from '@orago/dom';
 import { body } from '../dom';
 import { ViewerScene } from './viewer';
+import { ItemsDatScene } from './itemsdat';
 
 export class HomeScene extends Scene {
 	constructor(engine: Engine) {
@@ -47,7 +48,10 @@ export class HomeScene extends Scene {
 
 				node.button
 					.on('click', () => new ViewerScene(this.engine))
-					.text('Launch Viewer')
+					.text('Launch Viewer'),
+				node.button
+					.on('click', () => new ItemsDatScene(this.engine))
+					.text('Launch Items Dat')
 			);
 
 		body.append(page);
