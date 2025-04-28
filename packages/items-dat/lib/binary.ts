@@ -1,30 +1,36 @@
 import { SECRET } from './util.js';
 import { Buffer } from 'buffer';
 
-
-
 export enum $R {
 	int = 'i',
 	char = 'c',
 	short = 's',
 	readNextOn = '-',
 	readNextOff = '+',
-};
+}
 
-function xordec(ID: number, nlen: number, pos: number, enc: boolean, data: any) {
+function xordec(
+	ID: number,
+	nlen: number,
+	pos: number,
+	enc: boolean,
+	data: any
+) {
 	let str = '';
 
-	if (enc == true)
+	if (enc == true) {
 		for (let i = 0; i < nlen; i++) {
 			str += String.fromCharCode(data[pos]);
 			pos += 1;
 		}
-
-	else
+	} else {
 		for (let i = 0; i < nlen; i++) {
-			str += String.fromCharCode(data[pos] ^ SECRET.charCodeAt((ID + i) % SECRET.length));
+			str += String.fromCharCode(
+				data[pos] ^ SECRET.charCodeAt((ID + i) % SECRET.length)
+			);
 			pos += 1;
 		}
+	}
 
 	return str;
 }
@@ -83,4 +89,4 @@ export class BinaryReader {
 		else if (value === $R.readNextOff) return this.read_xordec(ID, false);
 		else throw `Invalid read ${value}`;
 	}
-};
+}

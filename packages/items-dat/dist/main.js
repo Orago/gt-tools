@@ -59,14 +59,17 @@ function handleItem(item, itemsDat) {
         item.parseRead({ flags5: $R.int });
     if (version >= 15) {
         item.data.v15_1 = item.reader.read_int(25);
-        item.data.v15_2 = item.reader.read_str();
+        item.data.chair_texture_file = item.reader.read_str();
     }
     if (version >= 16)
-        item.data.v16 = item.reader.read_str();
+        item.data.item_renderer_file = item.reader.read_str();
     if (version >= 17)
-        item.data.v17 = item.reader.read_int();
+        item.data.unk_8 = item.reader.read_int();
     if (version >= 18)
-        item.data.v18 = item.reader.read_int();
+        item.data.renderer_hash = item.reader.read_int();
+    if (version >= 19)
+        for (let i = 0; i < 9; i++)
+            item.reader.read_char();
     return item.data;
 }
 export function parseItemsDat(options) {

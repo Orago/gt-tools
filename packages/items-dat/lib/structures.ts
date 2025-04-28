@@ -88,23 +88,23 @@ export interface ItemData extends ItemDataRequired {
 	bodyparty?: number;
 
 	/* Version 13 */
-	flags4?: number;
+	light_source_range?: number;
 
 	/* Version 14 */
-	flags5?: number;
+	unk_7?: number;
 
 	/* Version 15 */
 	v15_1?: number;
-	v15_2?: string;
+	chair_texture_file?: string;
 
 	/* Version 16 */
-	v16?: string;
+	item_renderer_file?: string;
 
 	/* Version 17 */
-	v17?: number;
+	unk_8?: number;
 
 	/* Version 18 */
-	v18?: number;
+	renderer_hash?: number;
 }
 
 export class GrowtopiaItem {

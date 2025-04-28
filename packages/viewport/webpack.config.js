@@ -29,7 +29,7 @@ else {
 		new CompressionPlugin()
 	);
 }
-console.log('devmode', [devMode])
+
 /**
  * @type {import('webpack').Configuration}
  */

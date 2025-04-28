@@ -3,7 +3,7 @@ import { brush, engine } from '../renderer';
 import { Scene } from '../util/scene';
 import { drawGridBackground } from '../gridBackground';
 import { baseTileSize } from '../util/tiles';
-import { PanAndZoomHandler } from '../entities/panning';
+// import { PanAndZoomHandler } from '../entities/panning';
 import { newNode as node, ProxyNode } from '@orago/dom';
 import { body } from '../dom';
 import { parseItemsDat } from '@orago/items-dat/main';
@@ -12,6 +12,7 @@ import { GrowtopiaItem, GrowtopiaItemsDat } from '@orago/items-dat/structures';
 import { Vector2Map } from '@orago/vector';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { PanningPlugin } from '../entities/panning';
 
 
 export class ItemsDatScene extends Scene {
@@ -47,12 +48,15 @@ export class ItemsDatScene extends Scene {
 
 		this.priority = 0;
 
-		this.addTo();
 		this.loadDom();
 
 		engine.keyboard.init();
 
-		new PanAndZoomHandler(engine)
+		new PanningPlugin(engine, 'all')
+			.ref(self => {
+				self.options.min = 1;
+				self.options.max = 20;
+			})
 			.addTo()
 			.toggleModes(true, ['zoom', 'panning']);
 
@@ -61,7 +65,7 @@ export class ItemsDatScene extends Scene {
 		this.events.on('render', () => {
 			brush.clear();
 
-			drawGridBackground(engine, {
+			drawGridBackground(engine,  {
 				size: baseTileSize * engine.zoom,
 				offset: engine.offset,
 				gridColor: 'goldenrod',
@@ -108,15 +112,14 @@ export class ItemsDatScene extends Scene {
 					.text('Load Items')
 			);
 
-		body.append(page);
-
+		this.engine.ui.setContent(page);
 		this.events.on('remove', () => page.remove());
 	}
 
 	loadItems() {
 		const tmp = node.input
 			.attr({ type: 'file' })
-			.appendTo(body);
+			.appendTo(this.engine.ui.element);
 
 		tmp.on('change', async () => {
 			const files = (tmp.element as any).files;

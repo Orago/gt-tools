@@ -69,7 +69,7 @@ export class RttexEntityGenerator extends EngineObject {
 							height: sprite.height * engine.zoom
 						}
 
-						if (Collision.rectContains(box, engine.cursor.pos)) {
+						if (Collision.rectContains(box, { x: engine.cursor.pos.x, y: engine.cursor.pos.y, width: 1, height: 1 })) {
 							this.saveCanvas(sprite);
 							break;
 						}
@@ -91,7 +91,7 @@ export class RttexEntityGenerator extends EngineObject {
 
 						y += sprite.height * engine.zoom;
 
-						if (Collision.rectContains(box, engine.cursor.pos)) {
+						if (Collision.rectContains(box, { x: engine.cursor.pos.x, y: engine.cursor.pos.y, width: 1, height: 1 })) {
 							this.rttexList.splice(i, 1);
 							break;
 						}

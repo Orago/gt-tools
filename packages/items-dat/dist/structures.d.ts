@@ -61,13 +61,13 @@ export interface ItemData extends ItemDataRequired {
     punchOptions?: string;
     flags3?: number;
     bodyparty?: number;
-    flags4?: number;
-    flags5?: number;
+    light_source_range?: number;
+    unk_7?: number;
     v15_1?: number;
-    v15_2?: string;
-    v16?: string;
-    v17?: number;
-    v18?: number;
+    chair_texture_file?: string;
+    item_renderer_file?: string;
+    unk_8?: number;
+    renderer_hash?: number;
 }
 export declare class GrowtopiaItem {
     reader: BinaryReader;

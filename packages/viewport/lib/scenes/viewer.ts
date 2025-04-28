@@ -4,9 +4,10 @@ import { Scene } from '../util/scene';
 import { drawGridBackground } from '../gridBackground';
 import { baseTileSize } from '../util/tiles';
 import { RttexEntityGenerator } from '../entities/rttexGen';
-import { PanAndZoomHandler } from '../entities/panning';
+// import { PanAndZoomHandler } from '../entities/panning';
 import { newNode as node } from '@orago/dom';
 import { body } from '../dom';
+import { PanningPlugin } from '../entities/panning';
 
 export class ViewerScene extends Scene {
 	egen: RttexEntityGenerator;
@@ -15,13 +16,16 @@ export class ViewerScene extends Scene {
 
 		this.priority = 0;
 
-		this.addTo();
 		this.loadDom();
 
 		engine.keyboard.init();
 
 		this.egen = new RttexEntityGenerator(engine, true).addTo();
-		new PanAndZoomHandler(engine)
+		new PanningPlugin(engine, 'all')
+			.ref(self => {
+				self.options.min = 1;
+				self.options.max = 20;
+			})
 			.addTo()
 			.toggleModes(true, ['zoom', 'panning']);
 

@@ -3,7 +3,7 @@ import { brush } from '../renderer';
 import { Scene } from '../util/scene';
 import { drawGridBackground } from '../gridBackground';
 import { baseTileSize } from '../util/tiles';
-import { PanAndZoomHandler } from '../entities/panning';
+import { PanningPlugin } from '../entities/panning';
 import { newNode as node } from '@orago/dom';
 import { body } from '../dom';
 import { ViewerScene } from './viewer';
@@ -15,19 +15,29 @@ export class HomeScene extends Scene {
 
 		this.priority = 0;
 
-		this.addTo();
 		this.loadDom();
 
 		engine.keyboard.init();
 
-		new PanAndZoomHandler(engine)
+		new PanningPlugin(engine, 'all')
+			.ref(self => {
+				self.options.min = 1;
+				self.options.max = 20;
+			})
 			.addTo()
 			.toggleModes(true, ['zoom', 'panning']);
 
-		this.events.on('render', () => {
-			brush.clear();
 
-			drawGridBackground(engine, {
+		this.events.on('render', () => {
+			// brush.clear();
+
+			brush.chainable
+			.pos(0, 0)
+			.size(32, 32)
+			.color('red')
+			.rect;
+
+			drawGridBackground(engine,{
 				size: baseTileSize * engine.zoom,
 				offset: engine.offset
 			});
@@ -54,8 +64,7 @@ export class HomeScene extends Scene {
 					.text('Launch Items Dat')
 			);
 
-		body.append(page);
-
+		this.engine.ui.append(page);
 		this.events.on('remove', () => page.remove());
 	}
 }

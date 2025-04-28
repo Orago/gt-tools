@@ -1,5 +1,5 @@
 import Engine, { EngineObject, screenToWorld } from '@orago/game/engine';
-import { Point } from '@orago/lib/vector';
+import type { Point } from '@orago/lib/vector';
 
 function getMidpoint(points: Point[]) {
 	const midpoint = {
