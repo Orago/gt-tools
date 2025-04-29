@@ -22,7 +22,7 @@
 	"dependencies": {
 		"@orago/dom": "^0.0.10",
 		"@orago/game": "^0.0.22",
-		"@orago/lib": "^0.0.17",
+		"@orago/lib": "^0.0.29",
 		"@orago/status": "^1.0.9",
 		"@orago/vector": "^0.0.6"
 	}

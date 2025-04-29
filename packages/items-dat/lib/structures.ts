@@ -1,5 +1,5 @@
-import { $R, BinaryReader } from './binary.js';
-import { getUniqueItems } from './util.js';
+import { $R, BinaryReader } from "./binary.js";
+import { getUniqueItems } from "./util.js";
 
 interface GrowtopiaDatOptions {
 	version: number;
@@ -7,10 +7,10 @@ interface GrowtopiaDatOptions {
 }
 
 export class GrowtopiaItemsDat {
-	version = -1;
-	count = -1;
-	date = Date.now();
-	items: { [key: string]: ItemData } = {};
+	version: number = -1;
+	count: number = -1;
+	date: number = Date.now();
+	items: Record<string, ItemData> = {};
 
 	constructor(options: GrowtopiaDatOptions) {
 		this.version = options.version;
@@ -18,80 +18,80 @@ export class GrowtopiaItemsDat {
 	}
 
 	compare(other: GrowtopiaItemsDat) {
-		if (other instanceof GrowtopiaItemsDat != true)
-			throw 'Invalid items dat to compare';
+		if (other instanceof GrowtopiaItemsDat != true) {
+			throw "Invalid items dat to compare";
+		}
 
-		const curIDs = Object.keys(this.items);
-		const otherIDs = Object.keys(other.items);
+		const current_ids = Object.keys(this.items);
+		const other_ids = Object.keys(other.items);
 
-		const unique = getUniqueItems(curIDs, otherIDs);
+		const unique = getUniqueItems(current_ids, other_ids);
 
 		return { unique };
 	}
 }
 
 interface ItemDataRequired {
-	ID: number;
+	id: number;
 	name: string;
-
 }
 
 export interface ItemData extends ItemDataRequired {
-	editableType: number;
-	itemCategory: number;
-	actionType: number;
-	hitsoundType: number;
+	editable_type: number;
+	item_category: number;
+	action_type: number;
+	hitsound_type: number;
 
-	textureName: string;
-	textureHash: number;
-	itemKind: number;
+	texture_name: string;
+	texture_hash: number;
+	item_kind: number;
 	val1: number;
-	textureX: number;
-	textureY: number;
-	spreadType: number;
-	isStripeyWallpaper: number;
-	collisionType: number;
-	breakHits: number;
-	dropChance: number;
-	clothingType: number;
+	texture_x: number;
+	texture_y: number;
+	spread_type: number;
+	is_stripey_wallpaper: number;
+	collision_type: number;
+	break_hits: number;
+	drop_chance: number;
+	clothing_type: number;
 	rarity: number;
-	maxAmount: number;
-	extraFile: string;
-	extraFileHash: number;
-	audioVolume: number;
-	petName: string;
-	petPrefix: string;
-	petSuffix: string;
-	petAbility: string;
+	max_amount: number;
+	extra_file: string;
+	extra_file_hash: number;
+	audio_volume: number;
+	pet_name: string;
+	pet_prefix: string;
+	pet_suffix: string;
+	pet_ability: string;
 
-	seedBase: number;
-	seedOverlay: number;
-	treeBase: number;
-	treeLeaves: number;
+	seed_base: number;
+	seed_overlay: number;
+	tree_base: number;
+	tree_leaves: number;
 
-	seedColor: number;
-	seedOverlayColor: number;
-	unkval1: number;
-	growTime: number;
-	flags2: number;
-	isRayman: number;
+	seed_color: number;
+	seed_overlay_color: number;
+	unkval_1: number;
+	grow_time: number;
+	flags_2: number;
+	is_rayman: number;
 
-	extraOptions: string;
-	texture2: string;
-	extraOptions2: string;
+	extra_options: string;
+	texture_2: string;
+	extra_options_2: string;
 
 	/* Version 11 */
-	punchOptions?: string;
+	punch_options?: string;
 
 	/* Version 12 */
-	flags3?: number,
-	bodyparty?: number;
+	flags_3?: number;
+	body_part?: number;
 
 	/* Version 13 */
 	light_source_range?: number;
 
 	/* Version 14 */
-	unk_7?: number;
+	flags_5?: number;
 
 	/* Version 15 */
 	v15_1?: number;
@@ -109,37 +109,36 @@ export interface ItemData extends ItemDataRequired {
 
 export class GrowtopiaItem {
 	reader: BinaryReader;
-	ID: number;
+	id: number;
 	data: Partial<ItemData> & ItemDataRequired = {
-		ID: -1,
-		name: ''
+		id: -1,
+		name: "",
 	};
 
 	constructor(reader: BinaryReader) {
 		this.reader = reader;
 
-		this.ID = reader.read_int();
-		this.data.ID = this.ID;
+		this.id = reader.read_int();
+		this.data.id = this.id;
 	}
 
-	parseRead(object: { [key: string]: $R | number }) {
-		const newObj: { [key: string]: string | number } = {};
+	parseRead(object: Record<string, $R | number>) {
+		const new_obj: Record<string, string | number> = {};
 
 		for (const [key, value] of Object.entries(object)) {
 			let exit = false;
 
 			try {
-				newObj[key] = this.reader.readNext(value, this.ID);
-			}
-			catch (e) {
+				new_obj[key] = this.reader.readNext(value, this.id);
+			} catch (e) {
 				exit = true;
-				console.log('Failed for', key, this.data, e);
+				console.log("Failed for", key, this.data, e);
 				// process.exit();
 			}
 
-			if (exit) throw '';
+			if (exit) throw "";
 		}
 
-		return Object.assign(this.data, newObj);
+		return Object.assign(this.data, new_obj);
 	}
-};
+}

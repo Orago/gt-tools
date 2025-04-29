@@ -1,0 +1,33 @@
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+	transition: color 0.2s;
+	outline: none;
+}
+
+html {
+	box-sizing: border-box;
+	scroll-behavior: smooth;
+	-webkit-font-smoothing: antialiased;
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	height: 100%;
+	background-color: #60d7f2;
+}
+
+.gt-button {
+	border-radius: 5px;
+	padding: 5px;
+	cursor: pointer;
+	color: white;
+	text-shadow: black 0.1rem 0.1rem;
+	/* font-size: 25px; */
+	font-family: fantasy;
+	box-shadow: black 2px 2px;
+	align-content: center;
+	text-align: center;
+}

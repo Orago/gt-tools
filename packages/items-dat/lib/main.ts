@@ -1,95 +1,104 @@
-'use strict';
+"use strict";
 
-export { rttexToImage } from './rttexToImage.js';
-import { Buffer } from 'buffer';
-import { BinaryReader, $R } from './binary.js';
-import { GrowtopiaItem, GrowtopiaItemsDat, ItemData } from './structures.js';
-
+export { rttexToImage } from "./rttexToImage.js";
+import { Buffer } from "buffer";
+import { BinaryReader, $R } from "./binary.js";
+import { GrowtopiaItem, GrowtopiaItemsDat, ItemData } from "./structures.js";
 
 function handleItem(item: GrowtopiaItem, itemsDat: GrowtopiaItemsDat) {
 	const { version } = itemsDat;
 
-	item.parseRead({
-		editableType: $R.char,
-		itemCategory: $R.char,
-		actionType: $R.char,
-		hitsoundType: $R.char,
+	item.data.editable_type = item.reader.read_char();
+	item.data.item_category = item.reader.read_char();
+	item.data.action_type = item.reader.read_char();
+	item.data.hitsound_type = item.reader.read_char();
 
-		name: $R.readNextOff,
-		textureName: $R.readNextOn,
-		textureHash: $R.int,
-		itemKind: $R.char,
-		val1: $R.int,
-		textureX: $R.char,
-		textureY: $R.char,
-		spreadType: $R.char,
-		isStripeyWallpaper: $R.char,
-		collisionType: $R.char,
-		breakHits: $R.char,
-		dropChance: $R.int,
-		clothingType: $R.char,
-		rarity: $R.short,
-		maxAmount: $R.char,
-		extraFile: $R.readNextOn,
-		extraFileHash: $R.int,
-		audioVolume: $R.int,
+	item.data.name = item.reader.read_xordec(item.data.id, false);
+	item.data.texture_name = item.reader.read_xordec(item.data.id, true);
+	item.data.texture_hash = item.reader.read_int();
+	item.data.item_kind = item.reader.read_char();
+	item.data.val1 = item.reader.read_int();
+	item.data.texture_x = item.reader.read_char();
+	item.data.texture_y = item.reader.read_char();
+	item.data.spread_type = item.reader.read_char();
+	item.data.is_stripey_wallpaper = item.reader.read_char();
+	item.data.collision_type = item.reader.read_char();
+	item.data.break_hits = item.reader.read_char();
+	item.data.drop_chance = item.reader.read_int();
+	item.data.clothing_type = item.reader.read_char();
+	item.data.rarity = item.reader.read_short();
 
-		petName: $R.readNextOn,
-		petPrefix: $R.readNextOn,
-		petSuffix: $R.readNextOn,
-		petAbility: $R.readNextOn,
+	item.data.max_amount = item.reader.read_char();
+	item.data.extra_file = item.reader.read_xordec(item.data.id, true);
+	item.data.extra_file_hash = item.reader.read_int();
+	item.data.audio_volume = item.reader.read_int();
 
-		seedBase: $R.char,
-		seedOverlay: $R.char,
-		treeBase: $R.char,
-		treeLeaves: $R.char,
+	item.data.pet_name = item.reader.read_xordec(item.data.id, true);
+	item.data.pet_prefix = item.reader.read_xordec(item.data.id, true);
+	item.data.pet_suffix = item.reader.read_xordec(item.data.id, true);
+	item.data.pet_ability = item.reader.read_xordec(item.data.id, true);
 
-		seedColor: $R.int,
-		seedOverlayColor: $R.int,
-		unkval1: $R.int,
-		growTime: $R.int,
-		flags2: $R.short,
-		isRayman: $R.short,
+	item.data.seed_base = item.reader.read_char();
+	item.data.seed_overlay = item.reader.read_char();
+	item.data.tree_base = item.reader.read_char();
+	item.data.tree_leaves = item.reader.read_char();
 
-		extraOptions: $R.readNextOn,
-		texture2: $R.readNextOn,
-		extraOptions2: $R.readNextOn,
-	});
+	item.data.seed_color = item.reader.read_int();
+	item.data.seed_overlay_color = item.reader.read_int();
+	item.data.unkval_1 = item.reader.read_int();
+	item.data.grow_time = item.reader.read_int();
+	item.data.flags_2 = item.reader.read_short();
+	item.data.is_rayman = item.reader.read_short();
+
+	item.data.extra_options = item.reader.read_xordec(item.data.id, true);
+	item.data.texture_2 = item.reader.read_xordec(item.data.id, true);
+	item.data.extra_options_2 = item.reader.read_xordec(item.data.id, true);
 
 	item.reader.index += 80; //skiped many data
 
-	if (version >= 11)
-		item.parseRead({ punchOptions: $R.readNextOn });
+	if (version >= 11) {
+		item.data.punch_options = item.reader.read_xordec(item.data.id, true);
+	}
 
-	if (version >= 12)
-		item.parseRead({
-			flags3: $R.int,
-			bodyPart: 9
-		});
+	if (version >= 12) {
+		item.data.flags_3 = item.reader.read_int();
+		item.data.body_part = item.reader.read_int(9);
+	}
 
-	if (version >= 13)
-		item.parseRead({ flags4: $R.int });
+	if (version >= 13) {
+		// item.parseRead({ flags_4: $R.int });
+		item.data.light_source_range = item.reader.read_int();
+	}
 
-	if (version >= 14)
-		item.parseRead({ flags5: $R.int });
+	if (version >= 14) {
+		item.data.flags_5 = item.reader.read_int();
+		// item.parseRead({ flags_5: $R.int });
+	}
 
 	if (version >= 15) {
 		item.data.v15_1 = item.reader.read_int(25);
 		item.data.chair_texture_file = item.reader.read_str();
 	}
 
-	if (version >= 16)
+	if (version >= 16) {
 		item.data.item_renderer_file = item.reader.read_str();
+	}
 
-	if (version >= 17)
+	if (version >= 17) {
 		item.data.unk_8 = item.reader.read_int();
+	}
 
-	if (version >= 18)
+	if (version >= 18) {
 		item.data.renderer_hash = item.reader.read_int();
+	}
 
-	if (version >= 19)
-		for (let i = 0; i < 9; i++)
-			item.reader.read_char();
+	if (version >= 19) {
+		item.data.v15_1 = item.reader.read_int(9);
+	}
+
+	if (version >= 21) {
+		item.data.v15_1 = item.reader.read_int(2);
+	}
 
 	return item.data;
 }
@@ -97,14 +106,11 @@ function handleItem(item: GrowtopiaItem, itemsDat: GrowtopiaItemsDat) {
 interface ParseOptions {
 	buffer: Buffer;
 	filter?: (param0: any, param1: any) => boolean;
-	withItem?: (param0: ItemData) => any;
+	with_item?: (param0: ItemData) => any;
 }
 
 export function parseItemsDat(options: ParseOptions): GrowtopiaItemsDat {
-	const {
-		filter = () => true,
-		buffer
-	} = options;
+	const { filter = () => true, buffer } = options;
 
 	try {
 		const reader = new BinaryReader(buffer);
@@ -115,24 +121,24 @@ export function parseItemsDat(options: ParseOptions): GrowtopiaItemsDat {
 
 		k: for (let i = 0; i < dat.count; i++) {
 			try {
-				const Item = new GrowtopiaItem(reader);
-				const itemData = handleItem(Item, dat);
+				const item_instance = new GrowtopiaItem(reader);
+				const item_data = handleItem(item_instance, dat);
 
-				if (!filter(itemData, dat)) continue;
+				if (!filter(item_data, dat)) {
+					continue;
+				}
 
-				dat.items[itemData.name] = itemData as ItemData;
+				dat.items[item_data.name] = item_data as ItemData;
 			} catch (e) {
-				console.log('Couldn\'t parsed at ' + i)
+				console.log("Couldn't parsed at " + i);
 				// process.exit();
 				break k;
 			}
 		}
 
 		return dat;
-	}
-
-	catch (e: any) {
-		console.log('[Error]:', e.stack);
+	} catch (e: any) {
+		console.log("[Error]:", e.stack);
 
 		return new GrowtopiaItemsDat({
 			version: -1,

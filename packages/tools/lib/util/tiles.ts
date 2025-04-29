@@ -1,0 +1,1 @@
+export const baseTileSize = 32;

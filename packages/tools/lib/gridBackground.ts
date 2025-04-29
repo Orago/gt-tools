@@ -1,6 +1,6 @@
 import Engine from "@orago/game/engine";
 
-interface GridBgOptions {
+interface gridBgOptions {
 	size: number;
 	gridColor?: string;
 	gridColorV?: string;
@@ -11,7 +11,7 @@ interface GridBgOptions {
 	}
 }
 
-export function drawGridBackground(engine: Engine, options: GridBgOptions) {
+export function drawGridBackground(engine: Engine, options: gridBgOptions) {
 	const { brush } = engine;
 	const { ctx } = engine.brush;
 
